@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  backend:
+    image: ghcr.io/ts-a-devops/taskapp-backend:latest
+    container_name: taskapp-backend
+    restart: on-failure
+    network_mode: "host" # Allows the image's hardcoded localhost checks to reach your host network
+    environment:
+      - DATABASE_URL=postgresql://taskapp_user:REDACTED@127.0.0.1:5432/taskapp
+      - SECRET_KEY_BASE=28a63388e9529610be7fdfb656b4f652650adf8e47973bd2f98ef9b5e93916ab851de656726787dc497a49562eeabbf361cca0ebe51e10c52e8f252f6e9b261
+      - ENV=production
+
+  frontend:
+    image: ghcr.io/ts-a-devops/taskapp-frontend:latest
+    container_name: taskapp-frontend
+    ports:
+      - "3000:80"
+
+  db:
+    image: postgres:14
+    container_name: taskapp-db
+    environment:
+      - POSTGRES_USER=taskapp_user
+      - POSTGRES_PASSWORD=REDACTED
+      - POSTGRES_DB=taskapp
+    ports:
+      - "5432:5432" # Opens the port to the host machine interface

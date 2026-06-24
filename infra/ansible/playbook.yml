@@ -1,0 +1,18 @@
+---
+- name: Base hardening for all nodes
+  hosts: all
+  gather_facts: yes
+  roles:
+    - base
+
+- name: Install k3s server on control plane
+  hosts: control_plane
+  gather_facts: yes
+  roles:
+    - k3s-server
+
+- name: Join workers to the cluster
+  hosts: workers
+  gather_facts: yes
+  roles:
+    - k3s-agent

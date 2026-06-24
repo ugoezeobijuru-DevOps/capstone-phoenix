@@ -1,0 +1,19 @@
+---
+- name: Check if k3s agent is already installed
+  stat:
+    path: /usr/local/bin/k3s
+  register: k3s_binary
+
+- name: Install k3s agent and join cluster
+  shell: |
+    curl -sfL https://get.k3s.io | K3S_URL=https://{{ hostvars[groups['control_plane'][0]]['inventory_hostname'] }}:6443 \
+    K3S_TOKEN={{ hostvars[groups['control_plane'][0]]['k3s_token'] }} sh -
+  become: yes
+  when: not k3s_binary.stat.exists
+
+- name: Wait for k3s agent to start
+  systemd:
+    name: k3s-agent
+    state: started
+    enabled: yes
+  become: yes

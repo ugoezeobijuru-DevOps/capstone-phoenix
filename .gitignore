@@ -31,3 +31,5 @@ charts/*.tgz
 *.swp
 .idea/
 .vscode/
+infra/terraform/terraform.tfvars
+infra/terraform/.terraform/

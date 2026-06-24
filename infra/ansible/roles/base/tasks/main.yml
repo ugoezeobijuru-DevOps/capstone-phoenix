@@ -1,0 +1,69 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: yes
+
+- name: Upgrade all packages
+  apt:
+    upgrade: dist
+  become: yes
+
+- name: Install required packages
+  apt:
+    name:
+      - curl
+      - wget
+      - ufw
+      - fail2ban
+      - unattended-upgrades
+    state: present
+  become: yes
+
+- name: Allow SSH through firewall
+  ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+  become: yes
+
+- name: Allow HTTP through firewall
+  ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+  become: yes
+
+- name: Allow HTTPS through firewall
+  ufw:
+    rule: allow
+    port: "443"
+    proto: tcp
+  become: yes
+
+- name: Allow k3s API within cluster
+  ufw:
+    rule: allow
+    port: "6443"
+    proto: tcp
+  become: yes
+
+- name: Allow all traffic within VPC
+  ufw:
+    rule: allow
+    src: "10.0.0.0/16"
+  become: yes
+
+- name: Enable UFW
+  ufw:
+    state: enabled
+    policy: deny
+  become: yes
+
+- name: Enable fail2ban
+  systemd:
+    name: fail2ban
+    enabled: yes
+    state: started
+  become: yes
