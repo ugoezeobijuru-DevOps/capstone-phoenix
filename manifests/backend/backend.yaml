@@ -4,7 +4,7 @@ metadata:
   name: backend
   namespace: taskapp
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -19,8 +19,16 @@ spec:
           ports:
             - containerPort: 5000
           env:
-            - name: DATABASE_URL
-              value: postgresql://taskapp_user:REDACTED@postgres-service:5432/taskapp
+            - name: DATABASE_HOST
+              value: postgres-service
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: DATABASE_NAME
+              value: taskapp
+            - name: DATABASE_USER
+              value: taskapp_user
+            - name: DATABASE_PASSWORD
+              value: REDACTED
             - name: SECRET_KEY
               value: REDACTED
             - name: ENV
