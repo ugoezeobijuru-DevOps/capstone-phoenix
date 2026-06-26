@@ -20,21 +20,11 @@ spec:
             - containerPort: 5000
           env:
             - name: DATABASE_URL
-              value: "postgresql://taskapp:REDACTED@postgres-service:5432/taskapp"
+              value: postgresql://taskapp_user:REDACTED@postgres-service:5432/taskapp
             - name: SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: taskapp-secret
-                  key: SECRET_KEY
+              value: REDACTED
             - name: ENV
               value: production
-          resources:
-            requests:
-              memory: "128Mi"
-              cpu: "100m"
-            limits:
-              memory: "256Mi"
-              cpu: "250m"
 ---
 apiVersion: v1
 kind: Service

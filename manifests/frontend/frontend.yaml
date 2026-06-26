@@ -17,12 +17,7 @@ spec:
         - name: frontend
           image: ghcr.io/ts-a-devops/taskapp-frontend:latest
           ports:
-            - containerPort: 3000
-          env:
-            - name: BACKEND_HOST
-              value: "backend-service"
-            - name: BACKEND_PORT
-              value: "5000"
+            - containerPort: 80
           resources:
             requests:
               memory: "64Mi"
@@ -40,5 +35,5 @@ spec:
   selector:
     app: frontend
   ports:
-    - port: 3000
-      targetPort: 3000
+    - port: 80
+      targetPort: 80

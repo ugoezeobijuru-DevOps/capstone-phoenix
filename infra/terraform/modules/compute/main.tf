@@ -1,6 +1,6 @@
 data "aws_ami" "ubuntu" {
   most_recent = true
-  owners      = ["099720109477"] # Canonical (Ubuntu)
+  owners      = ["099720109477"]
 
   filter {
     name   = "name"
@@ -13,12 +13,22 @@ data "aws_ami" "ubuntu" {
   }
 }
 
+locals {
+  user_data = <<-USERDATA
+    #!/bin/bash
+    systemctl disable ufw
+    ufw disable
+    echo "UFW disabled" >> /var/log/user-data.log
+  USERDATA
+}
+
 resource "aws_instance" "control_plane" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [var.sg_id]
   key_name               = var.key_name
+  user_data              = local.user_data
 
   root_block_device {
     volume_size = 20
@@ -39,6 +49,7 @@ resource "aws_instance" "workers" {
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [var.sg_id]
   key_name               = var.key_name
+  user_data              = local.user_data
 
   root_block_device {
     volume_size = 20
