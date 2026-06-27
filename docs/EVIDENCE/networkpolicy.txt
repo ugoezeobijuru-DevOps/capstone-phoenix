@@ -1,0 +1,5 @@
+NAME             POD-SELECTOR   AGE
+allow-backend    app=backend    27m
+allow-frontend   app=frontend   27m
+allow-postgres   app=postgres   27m
+default-deny     <none>         27m
