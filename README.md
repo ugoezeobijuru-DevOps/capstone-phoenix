@@ -1,5 +1,19 @@
 # Capstone — Phoenix: TaskApp on Real Kubernetes
 
+## 🚀 Live Deployment
+- **App URL:** https://taskapp-ugoeze.duckdns.org
+- **Demo credentials:** admin / admin123
+- **Repository:** https://github.com/ugoezeobijuru-DevOps/capstone-phoenix
+
+## 📊 Infrastructure
+- **Cloud:** AWS us-east-1
+- **Nodes:** 3x t3.micro (1 control-plane + 2 workers)
+- **Kubernetes:** k3s v1.35.5
+- **GitOps:** Argo CD
+- **TLS:** Let's Encrypt via cert-manager
+
+
+
 > **Mission.** Take the **TaskApp** you containerized and shipped to one server with
 > Portainer, and run it on a **multi-node Kubernetes cluster you provision yourself** —
 > highly available, autoscaling, zero-downtime, behind HTTPS on your own domain, with
