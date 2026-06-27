@@ -1,0 +1,13 @@
+Name:               argocd/taskapp
+Project:            default
+Server:             https://kubernetes.default.svc
+Namespace:          taskapp
+URL:                https://localhost:8443/applications/taskapp
+Source:
+- Repo:             https://github.com/ugoezeobijuru-DevOps/capstone-phoenix.git
+  Target:           HEAD
+  Path:             manifests
+SyncWindow:         Sync Allowed
+Sync Policy:        Automated (Prune)
+Sync Status:        Synced to HEAD (af7accd)
+Health Status:      Healthy
