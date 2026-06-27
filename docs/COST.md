@@ -1,25 +1,21 @@
-# Cost (fill this in)
+# Cost - Capstone Phoenix
 
-This echoes the Docker lesson's "why one server" thread — except now the answer to "is the
-extra cost worth it?" is yours to argue.
+## Monthly Cost Breakdown (AWS us-east-1)
 
-## Monthly itemized cost
-| Item | Spec | Qty | $/mo |
-|---|---|---:|---:|
-| control-plane VM | … | 1 | … |
-| worker VMs | … | 2+ | … |
-| load balancer / elastic IP | … | … | … |
-| block storage (PVC) | … | … | … |
-| object storage (state, backups) | … | … | … |
-| DNS / domain | … | … | … |
-| **Total** | | | **$…** |
+| Resource | Type | Qty | Unit Cost | Monthly Cost |
+|----------|------|-----|-----------|--------------|
+| EC2 Instances | t3.micro | 3 | $0.0104/hr | $22.46 |
+| EBS Volumes | gp3 20GB | 3 | $0.08/GB/mo | $4.80 |
+| S3 (Terraform state) | Standard | 1 | $0.023/GB | $0.01 |
+| DynamoDB (TF lock) | On-demand | 1 | Minimal | $0.01 |
+| Data Transfer | Outbound | ~10GB | $0.09/GB | $0.90 |
+| **Total** | | | | **~$28.18/mo** |
 
-## Compared to the single-server Compose+Portainer deploy
-- That stack cost roughly: $…
-- This cluster costs: $…
-- **What the extra spend buys** (be honest — tie to §0 of the brief): HA, autoscale,
-  zero-downtime, multi-node self-healing. When is it NOT worth it? …
+## How to Cut Cost in Half
 
-## How I'd halve this
-> One concrete paragraph: spot/preemptible workers? smaller control-plane? k3s on 2 nodes?
-> shared ingress? …
+Switch from t3.micro to ARM-based t4g.micro instances ($0.0084/hr) saving 20%, 
+use reserved instances for 1-year commitment saving 40%, 
+and run only 1 worker during development saving another 33%. 
+Combined these changes would bring the monthly cost to approximately $13/mo.
+Alternatively, migrate to Hetzner Cloud where 3x CX21 instances (2 vCPU, 4GB RAM) 
+cost only 12 EUR/month total, solving both cost and memory pressure issues.

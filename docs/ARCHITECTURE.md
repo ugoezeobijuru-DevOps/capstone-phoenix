@@ -1,47 +1,36 @@
-# Architecture (fill this in)
+# Architecture - Capstone Phoenix
 
-## 1. Topology diagram
-> Draw it (ASCII, Excalidraw, draw.io — anything). Show: your nodes, where each TaskApp
-> tier runs, the ingress controller, and the request path.
+## Node Topology
+- 1 Control Plane: ip-10-0-1-102 (44.222.237.121)
+- 2 Workers: ip-10-0-1-242 (98.92.63.99), ip-10-0-1-152 (3.227.22.85)
 
-```
-[ replace with your diagram ]
+## How a Request Flows
+DNS (taskapp-ugoeze.duckdns.org) -> AWS Security Group -> Nginx Ingress Controller -> Frontend Service (port 80) -> Frontend Pod -> /api/ -> Backend Service (port 5000) -> Backend Pod -> Postgres Service (port 5432) -> Postgres StatefulSet
 
-  Internet ──DNS──▶ taskapp.<you>.dev / api.<you>.dev
-        │
-        ▼
-  ingress controller (node: ____)  ──TLS terminated by cert-manager──┐
-        │                                                            │
-        ▼                                                            ▼
-  frontend Service ──▶ frontend Pods (nodes: __, __)        backend Service ──▶ backend Pods (nodes: __, __)
-                              │  /api proxy                              │
-                              └────────────────────────────────────────▶│
-                                                                         ▼
-                                                          postgres Service ──▶ postgres-0 (PVC on node __)
-```
+## Infrastructure
+- Cloud: AWS (us-east-1)
+- Nodes: 3x t3.micro EC2 instances
+- Networking: Custom VPC (10.0.0.0/16), public subnet
+- Firewall: ports 22, 80, 443 open; 6443 restricted to my IP
+- Remote state: S3 bucket + DynamoDB lock
 
-## 2. Node & network
-- Nodes (role, size, AZ/region): …
-- CIDR / subnet choices and why: …
-- Firewall: what's open to the world, what's internal, and why `6443` is closed: …
+## Kubernetes Components
+- Distribution: k3s v1.35.5
+- Ingress: nginx ingress controller
+- TLS: cert-manager + Lets Encrypt
+- GitOps: Argo CD
+- Autoscaling: HPA (metrics-server)
 
-## 3. Request flow (one paragraph)
-> DNS → ingress → TLS → frontend → /api → backend → Postgres. Be specific about names/ports.
-
-## 4. The single-server assumptions you fixed  ← graders look here
-> For each, name the assumption that was safe on one box but breaks on a cluster, and the
-> K8s mechanism you used. Minimum: migrations, persistent storage, traffic routing,
-> self-healing, zero-downtime deploys, secrets.
-
-| Single-server assumption | Why it breaks at scale | How you fixed it |
-|---|---|---|
-| migrate-on-boot in the entrypoint | 2+ replicas race on `alembic upgrade head` | … |
-| named volume on the host | Pods reschedule across nodes | … |
-| `ports:` published on the host | many Pods, many nodes, one front door needed | … |
-| … | … | … |
-
-## 5. Choices & trade-offs
-- Raw YAML vs Helm vs kustomize — why: …
-- ingress-nginx vs k3s Traefik — why: …
-- CNI / NetworkPolicy enforcement — what and why: …
-- Secrets approach (out-of-band vs Sealed/External Secrets) — why: …
+## Core Requirements vs Single Server
+| Requirement | Single-server problem fixed |
+|-------------|----------------------------|
+| StatefulSet + PVC | Data survives pod restarts |
+| 2 replicas + anti-affinity | No single point of failure |
+| Migrations as Job | No race condition at startup |
+| Probes | Traffic only goes to healthy pods |
+| Resource limits | One pod cannot starve others |
+| RollingUpdate | Zero downtime deploys |
+| Ingress + TLS | Real HTTPS on real domain |
+| HPA | Auto-scales under load |
+| NetworkPolicy | Blast radius containment |
+| PDB | No outages during maintenance |

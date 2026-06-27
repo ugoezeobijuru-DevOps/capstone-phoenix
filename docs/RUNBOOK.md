@@ -1,30 +1,23 @@
-# Runbook (fill this in — a teammate must rebuild from this alone)
+# Runbook - Capstone Phoenix
 
-## Provision from zero
-```bash
-# 1. infra
-cd infra/terraform && terraform init && terraform apply
-# 2. cluster
-cd ../ansible && ansible-playbook -i inventory site.yml
-# 3. kubeconfig
-export KUBECONFIG=./kubeconfig && kubectl get nodes
-# 4. platform (ingress, cert-manager, metrics-server, argocd) — exact commands:
-#    ...
-# 5. GitOps takes over
-kubectl apply -f gitops/   # then Argo syncs the app
-```
+## Provision from Zero
+1. cd infra/terraform && terraform init && terraform apply
+2. SSH into control plane and install k3s server
+3. Join workers with k3s agent
+4. Fetch kubeconfig and update server IP
+5. kubectl apply -f manifests/ --recursive
 
-## Day-2 operations
-- **Scale a tier:** … (and note: prefer a git commit so Argo stays the source of truth)
-- **Roll back a bad deploy:** …
-- **Run a new migration safely:** …
-- **Rotate a secret:** …
+## Scale
+kubectl scale deployment backend --replicas=3 -n taskapp
 
-## Failure recovery (you'll demo one of these live)
-- **A worker node dies / is drained:** what happens, what you do, expected recovery time. …
-  ```bash
-  kubectl drain <node> --ignore-daemonsets --delete-emptydir-data   # the live-demo command
-  ```
-- **A backend Pod crashloops:** how you diagnose (`logs --previous`, `describe`, events). …
-- **A bad migration:** how you recover the DB. …
-- **Postgres Pod is rescheduled:** prove the PVC re-attaches and data is intact. …
+## Rollback
+kubectl rollout undo deployment/backend -n taskapp
+
+## Recover Dead Worker
+Pods auto-reschedule to healthy nodes within 5 minutes
+
+## Recover Dead Backend
+kubectl rollout restart deployment/backend -n taskapp
+
+## Bad Migration
+kubectl exec -n taskapp postgres-0 -- psql -U taskapp -c "DELETE FROM alembic_version WHERE version_num='<bad>';"
