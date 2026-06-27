@@ -1,0 +1,30 @@
+NAME                           READY   STATUS    RESTARTS        AGE
+pod/backend-589cb66d46-fqln5   0/1     Pending   0               3h28m
+pod/backend-589cb66d46-hrwh6   0/1     Pending   0               4h15m
+pod/backend-749bf77858-4kf2f   1/1     Running   0               3h30m
+pod/backend-749bf77858-5862w   1/1     Running   5 (3h28m ago)   4h21m
+pod/backend-749bf77858-dpjnj   0/1     Pending   0               3h28m
+pod/frontend-6fcfff54f-tsk6g   1/1     Running   0               4h21m
+pod/frontend-6fcfff54f-xtlbt   1/1     Running   0               3h30m
+pod/postgres-0                 1/1     Running   0               3h30m
+
+NAME                       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/backend            ClusterIP   10.43.13.222    <none>        5000/TCP   33h
+service/backend-service    ClusterIP   10.43.158.173   <none>        5000/TCP   33h
+service/frontend-service   ClusterIP   10.43.148.139   <none>        80/TCP     33h
+service/postgres-service   ClusterIP   None            <none>        5432/TCP   33h
+
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/backend    2/4     2            2           4h21m
+deployment.apps/frontend   2/2     2            2           4h21m
+
+NAME                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/backend-589cb66d46   2         2         0       4h16m
+replicaset.apps/backend-749bf77858   3         3         2       4h21m
+replicaset.apps/frontend-6fcfff54f   2         2         2       4h21m
+
+NAME                        READY   AGE
+statefulset.apps/postgres   1/1     33h
+
+NAME                                              REFERENCE            TARGETS                         MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/backend-hpa   Deployment/backend   cpu: 1%/70%, memory: 123%/80%   1         4         4          3h59m
